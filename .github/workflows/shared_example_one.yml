@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  # This event `workflow_call` allows us to consume this workflow from another workflow, making it reusable.
+  workflow_call:
+    # These are the inputs we're requesting when this workflow is called
+    inputs:
+      working-directory:
+        # Will force the input to be supplied, or the workflow won't execute
+        required: true
+        # The type of input
+        type: string
+      version:
+        required: true
+        type: string
+      cake-script:
+        required: false
+        type: string
+    # This is if we want to use secrets in our reusable workflow, they need to be passed explicitly as secrets.
+    secrets:
+      token:
+        required: true
+
+# This is the permission set up for the auto generated GITHUB_TOKEN, here we can limit it in scope, or grant it access to extra things.
+# A quick note: This token will NEVER be able to access other repositories, this is always in the context of the repository your workflow is running from
+permissions:
+  contents: write
+  issues: read
+  checks: write
+  pull-requests: write
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set Build Number
+      run: echo "BUILD_NUMBER=${{ inputs.version }}" >> $GITHUB_ENV
+
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.token }}
+
+    - name: "List files"
+      run: ls
