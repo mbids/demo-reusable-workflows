@@ -6,7 +6,7 @@ on:
 
 jobs:
   stage1:
-    uses: .github/workflows/shared_example_one.yml@main
+    uses: ./.github/workflows/shared_example_one.yml
     with:
       input_one: 'This is input variable one for a reusable workflow'
     secrets:
