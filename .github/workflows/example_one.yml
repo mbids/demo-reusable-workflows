@@ -1,0 +1,93 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Example One
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main or master branch
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+ # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+#Global env. variables
+env:
+  global_env_var1: teapot.txt
+  global_env_var2: this is cool
+
+ 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This is the beginning of a "job" stage, note different jobs will initialize in seperate runners, and run parallel.
+  stage_one:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    env: 
+      job_env_var1: "Welcome to this workflow run, this is meant to be a little help learning how GitHub actions work"
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo ${{ env.job_env_var1 }}
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo "Hopefully this helps a little getting started"
+          echo "Lets go!"
+  
+  stage_two:
+    runs-on: ubuntu-latest
+    #This statement can be used to make jobs run sequentially.
+    needs: [ stage_one ]
+    steps:
+    #This calls a composite action called checkout, the purpose of this is to checkout your repo to enable you working with it.
+      - uses: actions/checkout@v2
+
+      - name: Create text file
+        #During this multi line run, we're using a env. variable to define our filename.
+        run: |
+          touch ${{ env.global_env_var1 }}
+          echo "I'm a little teapot, short and stout" >> ${{ env.global_env_var1 }}
+      
+      #This calls a composite action called upload-artifact which will store whatever files we dictate as artifacts.
+      - name: Upload to artifact storage.
+        uses: actions/upload-artifact@v2
+        with:
+          name: mytextfile
+          path: ./${{ env.global_env_var1 }}
+
+  stage_three:
+    runs-on: ubuntu-latest
+    needs: [ stage_two ]
+    steps: 
+    #This calls yet another composite action, that downloads the artifact.
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: mytextfile
+
+        #In this step we're using a secret thats been predefined for this repository. Look up secret management to setup this secret.
+      - name: Append some text to the file
+        run: |
+          echo ${{ secrets.text_example }} >> ${{ env.global_env_var1 }}
+          cat ${{ env.global_env_var1 }}
+      
+      #Reupload so you can see the file size changes in the workflow
+      - name: Reupload to artifact storage
+        uses: actions/upload-artifact@v2
+        with:
+          name: mytextfile_v2
+          path: ./${{ env.global_env_var1 }}
+
+  #Example for a stage that doesn't use needs: [] 
+  stage_four:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run async
+        run: echo "Notice how the last defined stage in the workflow, runs simultanously as the first stage. this is because this stage doesn't depend on any others."
