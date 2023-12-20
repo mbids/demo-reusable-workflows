@@ -1,0 +1,15 @@
+name: Example three
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  stage1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Step one"
+        run: | 
+          echo "Hello world"
+
+          
