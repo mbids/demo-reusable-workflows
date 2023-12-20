@@ -22,11 +22,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       #Uses the composite action in this repo
-      - uses: ./.github/composite/
+      - uses: ./.github/actions/example_action
         with:
           input_one: "This is some text"
-      # Runs a set of commands using the runners shell
-      #Uses our own composite action from another repo, has to be public or you need to set up some PAT authentication etc.
+      # Uses our own composite action from another repo, has to be public or you need to set up some PAT authentication etc.
       - uses: mbids/composite-actions@v3
 
       #insert a step that uses an internal repository/private repository by checking out that repo 
