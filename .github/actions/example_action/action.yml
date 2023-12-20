@@ -1,0 +1,22 @@
+name: 'Basic Composite Action'
+description: 'Demonstrates how to build a composite action'
+inputs:
+  input_one:
+    required: true
+  input_two:
+    #required: false, required defaults to false, as such no need to explicitly state
+    description: "This is input two"
+
+runs:
+  using: "composite"
+  steps:
+    #You can use other composite actions inside your own, however nesting these too many times is rarely a good idea.
+    - uses: actions/checkout@v2
+    - run: |
+        echo "Your input_one was ${{ inputs.input_one }}"
+        echo "Your input_two was ${{ inputs.input_two }}" 
+      shell: bash
+    - run: echo "Display the contents of action.yml"
+      shell: bash          
+    - run:  echo "This concludes our small basic composite action."
+      shell: bash
