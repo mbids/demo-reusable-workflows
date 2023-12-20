@@ -1,20 +1,18 @@
-name: CI
+name: Shared example one
 
 on:
   # This event `workflow_call` allows us to consume this workflow from another workflow, making it reusable.
   workflow_call:
     # These are the inputs we're requesting when this workflow is called
     inputs:
-      working-directory:
-        # Will force the input to be supplied, or the workflow won't execute
+      input_one:
+        # If required is true it will force the input to be supplied, or the workflow won't execute
         required: true
         # The type of input
         type: string
-      version:
-        required: true
-        type: string
-      cake-script:
+      input_two:
         required: false
+        default: 1.0.0
         type: string
     # This is if we want to use secrets in our reusable workflow, they need to be passed explicitly as secrets.
     secrets:
@@ -35,11 +33,7 @@ jobs:
 
     steps:
     - name: Set Build Number
-      run: echo "BUILD_NUMBER=${{ inputs.version }}" >> $GITHUB_ENV
-
-    - uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.token }}
-
-    - name: "List files"
-      run: ls
+      # This is setting the contents of the variable "
+      run: |
+        echo "INPUT_ONE=${{ inputs.input_one }}" >> $GITHUB_ENV
+        echo "INPUT_TWO=${{ inputs_input_two }}" >> $GITHUB_ENV
